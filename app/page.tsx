@@ -463,7 +463,15 @@ export default function Home() {
               Chave do Gemini
             </label>
             <p className="mt-1 text-xs text-slate-500">
-              É necessario fornecer uma chave de API do Gemini para usar o modelo de IA que gera as imagens. Se voce nao tiver uma chave, pode obter uma gratuitamente no site do Google Cloud. O campo abaixo aceita tanto a chave completa quanto apenas o valor da chave.
+              Gere a sua em{' '}
+              <a
+                href="https://aistudio.google.com/api-keys"
+                target="_blank"
+                rel="noreferrer"
+                className="font-semibold text-indigo-600 underline"
+              >
+                https://aistudio.google.com/api-keys
+              </a>
             </p>
             <input
               type="password"
