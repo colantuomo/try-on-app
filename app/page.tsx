@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import styles from './page.module.css'
 
 type HistoryItem = {
   url: string
@@ -210,25 +209,28 @@ export default function Home() {
   }
 
   return (
-    <main className={styles.main}>
-      <div className={styles.container}>
-        <h1 className={styles.title}>Virtual Try-On</h1>
-        <p className={styles.subtitle}>
+    <main className="flex min-h-screen flex-col items-center px-6 py-10">
+      <div className="w-full max-w-5xl">
+        <h1 className="text-center text-4xl font-bold text-slate-900">Virtual Try-On</h1>
+        <p className="mt-3 text-center text-base text-slate-600">
           Informe o link da imagem ou faca upload para gerar o resultado com IA
         </p>
 
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.uploadSection}>
-            <div className={styles.uploadBox}>
-              <div className={styles.sourceRow}>
-                <span className={styles.label}>Foto de corpo inteiro</span>
-                <div className={styles.sourceButtons}>
+        <form
+          onSubmit={handleSubmit}
+          className="mt-10 rounded-2xl bg-white p-8 shadow-lg shadow-slate-200"
+        >
+          <div className="grid gap-8 md:grid-cols-2">
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-3">
+                <span className="text-sm font-semibold text-slate-700">Foto de corpo inteiro</span>
+                <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
                     className={
                       personSource === 'url'
-                        ? `${styles.sourceButton} ${styles.sourceActive}`
-                        : styles.sourceButton
+                        ? 'rounded-full bg-indigo-500 px-4 py-2 text-sm font-semibold text-white'
+                        : 'rounded-full border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm text-indigo-700'
                     }
                     onClick={() => setPersonSource('url')}
                   >
@@ -238,8 +240,8 @@ export default function Home() {
                     type="button"
                     className={
                       personSource === 'upload'
-                        ? `${styles.sourceButton} ${styles.sourceActive}`
-                        : styles.sourceButton
+                        ? 'rounded-full bg-indigo-500 px-4 py-2 text-sm font-semibold text-white'
+                        : 'rounded-full border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm text-indigo-700'
                     }
                     onClick={() => setPersonSource('upload')}
                   >
@@ -249,8 +251,8 @@ export default function Home() {
                     type="button"
                     className={
                       personSource === 'saved'
-                        ? `${styles.sourceButton} ${styles.sourceActive}`
-                        : styles.sourceButton
+                        ? 'rounded-full bg-indigo-500 px-4 py-2 text-sm font-semibold text-white'
+                        : 'rounded-full border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm text-indigo-700'
                     }
                     onClick={() => savedPerson && setPersonSource('saved')}
                     disabled={!savedPerson}
@@ -261,21 +263,21 @@ export default function Home() {
               </div>
 
               {personSource === 'url' && (
-                <div className={styles.inputBlock}>
+                <div className="flex flex-col gap-2">
                   <input
                     type="url"
                     id="person"
                     placeholder="https://exemplo.com/pessoa.jpg"
                     value={personUrl}
                     onChange={(e) => setPersonUrl(e.target.value)}
-                    className={styles.textInput}
+                    className="rounded-lg border border-slate-200 px-4 py-3 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                   />
-                  <p className={styles.hint}>A imagem deve ser publica e acessivel pela internet.</p>
+                  <p className="text-xs text-slate-500">A imagem deve ser publica e acessivel pela internet.</p>
                 </div>
               )}
 
               {personSource === 'upload' && (
-                <div className={styles.inputBlock}>
+                <div className="flex flex-col gap-3">
                   <input
                     type="file"
                     accept="image/*"
@@ -285,14 +287,14 @@ export default function Home() {
                       const dataUrl = await readFileAsDataUrl(file)
                       setPersonDataUrl(dataUrl)
                     }}
-                    className={styles.fileInput}
+                    className="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm"
                   />
                   {personDataUrl && (
-                    <div className={styles.previewBox}>
+                    <div className="flex justify-center rounded-xl bg-slate-50 p-3">
                       <img
                         src={personDataUrl}
                         alt="Preview da pessoa"
-                        className={styles.previewImage}
+                        className="max-h-52 rounded-lg"
                       />
                     </div>
                   )}
@@ -300,26 +302,26 @@ export default function Home() {
               )}
 
               {personSource === 'saved' && savedPerson && (
-                <div className={styles.previewBox}>
+                <div className="flex justify-center rounded-xl bg-slate-50 p-3">
                   <img
                     src={savedPerson.value}
                     alt="Foto salva"
-                    className={styles.previewImage}
+                    className="max-h-52 rounded-lg"
                   />
                 </div>
               )}
             </div>
 
-            <div className={styles.uploadBox}>
-              <div className={styles.sourceRow}>
-                <span className={styles.label}>Foto da roupa</span>
-                <div className={styles.sourceButtons}>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-3">
+                <span className="text-sm font-semibold text-slate-700">Foto da roupa</span>
+                <div className="flex flex-wrap gap-2">
                   <button
                     type="button"
                     className={
                       clothingSource === 'url'
-                        ? `${styles.sourceButton} ${styles.sourceActive}`
-                        : styles.sourceButton
+                        ? 'rounded-full bg-indigo-500 px-4 py-2 text-sm font-semibold text-white'
+                        : 'rounded-full border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm text-indigo-700'
                     }
                     onClick={() => setClothingSource('url')}
                   >
@@ -329,8 +331,8 @@ export default function Home() {
                     type="button"
                     className={
                       clothingSource === 'upload'
-                        ? `${styles.sourceButton} ${styles.sourceActive}`
-                        : styles.sourceButton
+                        ? 'rounded-full bg-indigo-500 px-4 py-2 text-sm font-semibold text-white'
+                        : 'rounded-full border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm text-indigo-700'
                     }
                     onClick={() => setClothingSource('upload')}
                   >
@@ -340,21 +342,21 @@ export default function Home() {
               </div>
 
               {clothingSource === 'url' && (
-                <div className={styles.inputBlock}>
+                <div className="flex flex-col gap-2">
                   <input
                     type="url"
                     id="clothing"
                     placeholder="https://exemplo.com/roupa.jpg"
                     value={clothingUrl}
                     onChange={(e) => setClothingUrl(e.target.value)}
-                    className={styles.textInput}
+                    className="rounded-lg border border-slate-200 px-4 py-3 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
                   />
-                  <p className={styles.hint}>A imagem deve ser publica e acessivel pela internet.</p>
+                  <p className="text-xs text-slate-500">A imagem deve ser publica e acessivel pela internet.</p>
                 </div>
               )}
 
               {clothingSource === 'upload' && (
-                <div className={styles.inputBlock}>
+                <div className="flex flex-col gap-3">
                   <input
                     type="file"
                     accept="image/*"
@@ -364,14 +366,14 @@ export default function Home() {
                       const dataUrl = await readFileAsDataUrl(file)
                       setClothingDataUrl(dataUrl)
                     }}
-                    className={styles.fileInput}
+                    className="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-sm"
                   />
                   {clothingDataUrl && (
-                    <div className={styles.previewBox}>
+                    <div className="flex justify-center rounded-xl bg-slate-50 p-3">
                       <img
                         src={clothingDataUrl}
                         alt="Preview da roupa"
-                        className={styles.previewImage}
+                        className="max-h-52 rounded-lg"
                       />
                     </div>
                   )}
@@ -380,15 +382,15 @@ export default function Home() {
             </div>
           </div>
 
-          <div className={styles.selectBox}>
-            <label htmlFor="scope" className={styles.label}>
+          <div className="mt-8 flex flex-col gap-3">
+            <label htmlFor="scope" className="text-sm font-semibold text-slate-700">
               Area da roupa
             </label>
             <select
               id="scope"
               value={garmentScope}
               onChange={(e) => setGarmentScope(e.target.value)}
-              className={styles.selectInput}
+              className="rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
             >
               <option value="upper">Parte de cima</option>
               <option value="lower">Parte de baixo</option>
@@ -396,43 +398,47 @@ export default function Home() {
             </select>
           </div>
 
-          <p className={styles.note}>
+          <p className="mt-6 text-sm text-slate-500">
             O prompt e fixo e otimizado para o modelo nano-banana-pro.
           </p>
 
           <button
             type="submit"
             disabled={loading || !personUrl || !clothingUrl}
-            className={styles.button}
+            className="mt-6 w-full rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 px-6 py-4 text-base font-semibold text-white shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? 'Processando...' : 'Gerar Imagem'}
           </button>
         </form>
 
         {error && (
-          <div className={styles.error}>
-            <p>{error}</p>
+          <div className="mt-6 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700">
+            {error}
           </div>
         )}
 
         {resultImage && (
-          <div className={styles.result}>
-            <h2>Resultado:</h2>
-            <img src={resultImage} alt="Resultado do try-on" className={styles.resultImage} />
+          <div className="mt-10 text-center">
+            <h2 className="mb-6 text-xl font-semibold text-slate-800">Resultado:</h2>
+            <img
+              src={resultImage}
+              alt="Resultado do try-on"
+              className="mx-auto max-w-full rounded-2xl shadow-xl"
+            />
           </div>
         )}
 
         {hasHistory && (
-          <section className={styles.carousel}>
-            <div className={styles.carouselHeader}>
-              <h2>Historico de imagens</h2>
-              <span className={styles.count}>{history.length} geradas</span>
+          <section className="mt-12 rounded-2xl bg-white p-6 shadow-lg shadow-slate-200">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <h2 className="text-lg font-semibold text-slate-800">Historico de imagens</h2>
+              <span className="text-sm text-slate-500">{history.length} geradas</span>
             </div>
 
-            <div className={styles.carouselMain}>
+            <div className="mt-6 grid items-center gap-4 md:grid-cols-[auto_1fr_auto]">
               <button
                 type="button"
-                className={styles.navButton}
+                className="h-11 w-11 rounded-full border border-indigo-200 bg-indigo-50 text-indigo-700"
                 onClick={handlePrev}
                 disabled={history.length < 2}
                 aria-label="Imagem anterior"
@@ -440,19 +446,19 @@ export default function Home() {
                 ◀
               </button>
 
-              <div className={styles.activeFrame}>
+              <div className="flex min-h-[260px] items-center justify-center rounded-2xl bg-slate-50 p-4">
                 {activeHistoryItem && (
                   <img
                     src={activeHistoryItem.url}
                     alt="Imagem gerada anteriormente"
-                    className={styles.activeImage}
+                    className="max-h-[360px] rounded-2xl shadow-lg"
                   />
                 )}
               </div>
 
               <button
                 type="button"
-                className={styles.navButton}
+                className="h-11 w-11 rounded-full border border-indigo-200 bg-indigo-50 text-indigo-700"
                 onClick={handleNext}
                 disabled={history.length < 2}
                 aria-label="Proxima imagem"
@@ -461,22 +467,22 @@ export default function Home() {
               </button>
             </div>
 
-            <div className={styles.thumbnailRow}>
+            <div className="mt-6 grid auto-cols-[minmax(90px,1fr)] grid-flow-col gap-3 overflow-x-auto pb-2">
               {history.map((item, index) => (
                 <button
                   key={`${item.url}-${index}`}
                   type="button"
                   className={
                     index === activeIndex
-                      ? `${styles.thumbButton} ${styles.thumbActive}`
-                      : styles.thumbButton
+                      ? 'rounded-xl border-2 border-indigo-400'
+                      : 'rounded-xl border-2 border-transparent'
                   }
                   onClick={() => handleSelect(index)}
                 >
                   <img
                     src={item.url}
                     alt={`Imagem gerada ${index + 1}`}
-                    className={styles.thumbnail}
+                    className="h-20 w-full rounded-lg object-cover"
                   />
                 </button>
               ))}
