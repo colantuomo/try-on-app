@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
         const personInput = body?.personInput || (body?.personUrl ? { type: 'url', value: body.personUrl } : null)
         const clothingInput = body?.clothingInput || (body?.clothingUrl ? { type: 'url', value: body.clothingUrl } : null)
         const garmentScope = body?.garmentScope || 'upper'
+        const geminiApiKey = typeof body?.geminiApiKey === 'string' ? body.geminiApiKey.trim() : ''
         const provider = (process.env.IMAGE_PROVIDER || 'replicate').toLowerCase()
         const scopeText =
             garmentScope === 'lower'
@@ -73,7 +74,8 @@ Generate only just one imagem
         let resultUrl = ''
 
         if (provider === 'gemini') {
-            if (!process.env.GEMINI_API_KEY) {
+            const effectiveGeminiKey = geminiApiKey || process.env.GEMINI_API_KEY
+            if (!effectiveGeminiKey) {
                 return NextResponse.json(
                     { error: 'GEMINI_API_KEY não configurada. Veja o README para instruções.' },
                     { status: 500 }
@@ -81,7 +83,7 @@ Generate only just one imagem
             }
 
             const geminiModel = process.env.GEMINI_IMAGE_MODEL || 'gemini-3-pro-image-preview'
-            const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY })
+            const ai = new GoogleGenAI({ apiKey: effectiveGeminiKey })
 
             const toInlineImagePart = async (input: { type: string; value: string }): Promise<InlineImagePart> => {
                 if (input.type === 'data' || isDataUrl(input.value)) {

@@ -14,6 +14,7 @@ type ImageInput = {
 
 const HISTORY_KEY = 'tryon_history'
 const SAVED_PERSON_KEY = 'tryon_saved_person'
+const GEMINI_KEY_STORAGE = 'gemini_api_key'
 const MAX_HISTORY = 20
 
 export default function Home() {
@@ -25,6 +26,8 @@ export default function Home() {
   const [clothingDataUrl, setClothingDataUrl] = useState('')
   const [savedPerson, setSavedPerson] = useState<ImageInput | null>(null)
   const [garmentScope, setGarmentScope] = useState('upper')
+  const [geminiApiKey, setGeminiApiKey] = useState('')
+  const [rememberGeminiKey, setRememberGeminiKey] = useState(false)
   const [resultImage, setResultImage] = useState<string | null>(null)
   const [history, setHistory] = useState<HistoryItem[]>([])
   const [activeIndex, setActiveIndex] = useState(0)
@@ -58,6 +61,18 @@ export default function Home() {
 
   useEffect(() => {
     try {
+      const storedKey = localStorage.getItem(GEMINI_KEY_STORAGE)
+      if (storedKey) {
+        setGeminiApiKey(storedKey)
+        setRememberGeminiKey(true)
+      }
+    } catch {
+      // Ignore storage failures
+    }
+  }, [])
+
+  useEffect(() => {
+    try {
       localStorage.setItem(HISTORY_KEY, JSON.stringify(history))
     } catch {
       // Ignore storage failures
@@ -73,6 +88,18 @@ export default function Home() {
       // Ignore storage failures
     }
   }, [savedPerson])
+
+  useEffect(() => {
+    try {
+      if (rememberGeminiKey && geminiApiKey) {
+        localStorage.setItem(GEMINI_KEY_STORAGE, geminiApiKey)
+      } else {
+        localStorage.removeItem(GEMINI_KEY_STORAGE)
+      }
+    } catch {
+      // Ignore storage failures
+    }
+  }, [geminiApiKey, rememberGeminiKey])
 
   const hasHistory = history.length > 0
   const activeHistoryItem = useMemo(() => history[activeIndex], [history, activeIndex])
@@ -169,6 +196,7 @@ export default function Home() {
           personInput,
           clothingInput,
           garmentScope,
+          geminiApiKey: geminiApiKey.trim() || undefined,
         }),
       })
 
@@ -207,6 +235,20 @@ export default function Home() {
   const handleSelect = (index: number) => {
     setActiveIndex(index)
   }
+
+  const personInputPreview = getInputFromSource(
+    personSource,
+    personUrl,
+    personDataUrl,
+    savedPerson
+  )
+  const clothingInputPreview = getInputFromSource(
+    clothingSource,
+    clothingUrl,
+    clothingDataUrl,
+    null
+  )
+  const canSubmit = Boolean(personInputPreview && clothingInputPreview) && !loading
 
   return (
     <main className="flex min-h-screen flex-col items-center px-6 py-10">
@@ -402,9 +444,34 @@ export default function Home() {
             O prompt e fixo e otimizado para o modelo nano-banana-pro.
           </p>
 
+          <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4">
+            <label className="text-sm font-semibold text-slate-700">
+              Chave do Gemini
+            </label>
+            <p className="mt-1 text-xs text-slate-500">
+              É necessario fornecer uma chave de API do Gemini para usar o modelo de IA que gera as imagens. Se voce nao tiver uma chave, pode obter uma gratuitamente no site do Google Cloud. O campo abaixo aceita tanto a chave completa quanto apenas o valor da chave.
+            </p>
+            <input
+              type="password"
+              placeholder="Cole sua chave aqui"
+              value={geminiApiKey}
+              onChange={(e) => setGeminiApiKey(e.target.value)}
+              className="mt-3 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
+            />
+            <label className="mt-3 flex items-center gap-2 text-xs text-slate-600">
+              <input
+                type="checkbox"
+                checked={rememberGeminiKey}
+                onChange={(e) => setRememberGeminiKey(e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300"
+              />
+              Salvar esta chave neste navegador
+            </label>
+          </div>
+
           <button
             type="submit"
-            disabled={loading || !personUrl || !clothingUrl}
+            disabled={!canSubmit}
             className="mt-6 w-full rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 px-6 py-4 text-base font-semibold text-white shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? 'Processando...' : 'Gerar Imagem'}
