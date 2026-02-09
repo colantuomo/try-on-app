@@ -177,7 +177,7 @@ Generate only just one imagem
                 )
             }
 
-            const output = await replicate.run(
+            const output: unknown = await replicate.run(
                 "google/nano-banana-pro",
                 {
                     input: {
@@ -189,7 +189,7 @@ Generate only just one imagem
                         safety_filter_level: 'block_only_high',
                     }
                 }
-            ) as string
+            )
 
             console.log('Processamento concluído!', output)
 
