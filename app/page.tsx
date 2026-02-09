@@ -103,6 +103,7 @@ export default function Home() {
 
   const hasHistory = history.length > 0
   const activeHistoryItem = useMemo(() => history[activeIndex], [history, activeIndex])
+  const hasSavedPerson = Boolean(savedPerson?.value)
 
   const isValidUrl = (value: string) => {
     try {
@@ -115,6 +116,17 @@ export default function Home() {
 
   const isValidDataUrl = (value: string) =>
     value.startsWith('data:image/') && value.includes('base64,')
+
+  useEffect(() => {
+    if (personSource === 'url' && isValidUrl(personUrl)) {
+      setSavedPerson({ type: 'url', value: personUrl.trim() })
+      return
+    }
+
+    if (personSource === 'upload' && isValidDataUrl(personDataUrl)) {
+      setSavedPerson({ type: 'data', value: personDataUrl })
+    }
+  }, [personSource, personUrl, personDataUrl])
 
   const readFileAsDataUrl = (file: File) =>
     new Promise<string>((resolve, reject) => {
@@ -294,10 +306,12 @@ export default function Home() {
                     className={
                       personSource === 'saved'
                         ? 'rounded-full bg-indigo-500 px-4 py-2 text-sm font-semibold text-white'
-                        : 'rounded-full border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm text-indigo-700'
+                        : hasSavedPerson
+                          ? 'rounded-full border border-indigo-200 bg-indigo-50 px-4 py-2 text-sm text-indigo-700'
+                          : 'rounded-full border border-slate-200 bg-slate-100 px-4 py-2 text-sm text-slate-400'
                     }
-                    onClick={() => savedPerson && setPersonSource('saved')}
-                    disabled={!savedPerson}
+                    onClick={() => hasSavedPerson && setPersonSource('saved')}
+                    disabled={!hasSavedPerson}
                   >
                     Usar salva
                   </button>
@@ -424,7 +438,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="mt-8 flex flex-col gap-3">
+          {/* <div className="mt-8 flex flex-col gap-3">
             <label htmlFor="scope" className="text-sm font-semibold text-slate-700">
               Area da roupa
             </label>
@@ -438,7 +452,7 @@ export default function Home() {
               <option value="lower">Parte de baixo</option>
               <option value="full">Roupa completa</option>
             </select>
-          </div>
+          </div> */}
 
           <p className="mt-6 text-sm text-slate-500">
             O prompt e fixo e otimizado para o modelo nano-banana-pro.
