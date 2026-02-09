@@ -146,11 +146,12 @@ Generate only just one imagem
             }
 
             const parts = response.candidates?.[0]?.content?.parts || []
-            const imagePart = parts.find((part: { inlineData?: { data: string; mimeType: string } }) =>
-                Boolean(part.inlineData?.data)
-            )
+            const imagePart = parts.find((part) => {
+                const inlineData = (part as { inlineData?: { data?: string; mimeType?: string } }).inlineData
+                return typeof inlineData?.data === 'string' && inlineData.data.length > 0
+            }) as { inlineData?: { data?: string; mimeType?: string } } | undefined
             console.log('Resposta da Gemini recebida:', response)
-            if (!imagePart?.inlineData?.data) {
+            if (!imagePart?.inlineData?.data || !imagePart.inlineData.mimeType) {
                 throw new Error('Resposta da Gemini nao contem imagem')
             }
 
