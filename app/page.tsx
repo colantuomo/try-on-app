@@ -299,7 +299,7 @@ export default function Home() {
                     }
                     onClick={() => setPersonSource('upload')}
                   >
-                    Upload
+                    Enviar foto
                   </button>
                   <button
                     type="button"
@@ -313,7 +313,7 @@ export default function Home() {
                     onClick={() => hasSavedPerson && setPersonSource('saved')}
                     disabled={!hasSavedPerson}
                   >
-                    Usar salva
+                    Usar foto salva
                   </button>
                 </div>
               </div>
@@ -392,7 +392,7 @@ export default function Home() {
                     }
                     onClick={() => setClothingSource('upload')}
                   >
-                    Upload
+                    Enviar foto
                   </button>
                 </div>
               </div>
