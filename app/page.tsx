@@ -248,6 +248,20 @@ export default function Home() {
     setActiveIndex(index)
   }
 
+  const handleRemoveHistory = (index: number) => {
+    setHistory((prev) => {
+      const next = prev.filter((_, i) => i !== index)
+      if (next.length === 0) {
+        setActiveIndex(0)
+        return next
+      }
+      if (activeIndex >= next.length) {
+        setActiveIndex(next.length - 1)
+      }
+      return next
+    })
+  }
+
   const personInputPreview = getInputFromSource(
     personSource,
     personUrl,
@@ -272,6 +286,7 @@ export default function Home() {
 
         <form
           onSubmit={handleSubmit}
+          noValidate
           className="mt-10 rounded-2xl bg-white p-8 shadow-lg shadow-slate-200"
         >
           <div className="grid gap-8 md:grid-cols-2">
@@ -558,22 +573,34 @@ export default function Home() {
 
             <div className="mt-6 grid auto-cols-[minmax(90px,1fr)] grid-flow-col gap-3 overflow-x-auto pb-2">
               {history.map((item, index) => (
-                <button
+                <div
                   key={`${item.url}-${index}`}
-                  type="button"
                   className={
                     index === activeIndex
-                      ? 'rounded-xl border-2 border-indigo-400'
-                      : 'rounded-xl border-2 border-transparent'
+                      ? 'relative rounded-xl border-2 border-indigo-400'
+                      : 'relative rounded-xl border-2 border-transparent'
                   }
-                  onClick={() => handleSelect(index)}
                 >
-                  <img
-                    src={item.url}
-                    alt={`Imagem gerada ${index + 1}`}
-                    className="h-20 w-full rounded-lg object-cover"
-                  />
-                </button>
+                  <button
+                    type="button"
+                    className="block"
+                    onClick={() => handleSelect(index)}
+                  >
+                    <img
+                      src={item.url}
+                      alt={`Imagem gerada ${index + 1}`}
+                      className="h-20 w-full rounded-lg object-cover"
+                    />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveHistory(index)}
+                    aria-label="Remover imagem"
+                    className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-xs font-semibold text-slate-700 shadow"
+                  >
+                    ×
+                  </button>
+                </div>
               ))}
             </div>
           </section>
