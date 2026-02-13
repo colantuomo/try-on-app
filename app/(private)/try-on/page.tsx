@@ -314,11 +314,7 @@ export default function Home() {
       <div className="w-full max-w-5xl">
         <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
           <div className="text-sm text-slate-600">
-            {status === 'loading'
-              ? 'Carregando...'
-              : session
-                ? `Ola, ${session.user?.name ?? session.user?.email ?? 'usuario'}`
-                : 'Acesse com Google para salvar seu historico'}
+            Ola, {session.user?.name ?? session.user?.email ?? 'usuario'}
           </div>
           <div className="flex flex-wrap gap-3">
             {status === 'authenticated' && session ? (
