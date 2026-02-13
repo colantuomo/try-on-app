@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import { AuthProvider } from '@/lib/auth/provider'
 
 export const metadata: Metadata = {
   title: 'Virtual Try-On App',
@@ -14,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-200 text-slate-900">
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   )

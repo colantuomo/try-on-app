@@ -12,9 +12,12 @@ Este projeto é um aplicativo web de virtual try-on construído com **Next.js**.
 
 ## 🛠️ Tecnologias
 
-- **Next.js 14** (App Router)
+- **Next.js 16** (App Router)
 - **React 18**
 - **TypeScript**
+- **Tailwind CSS**
+- **Prisma**
+- **Auth.js (NextAuth)**
 - **Replicate API** e **Gemini API** (geracao/edicao de imagens)
 
 ## 📦 Instalação
@@ -22,9 +25,12 @@ Este projeto é um aplicativo web de virtual try-on construído com **Next.js**.
 ```bash
 # Instalar dependências
 npm install
+
+# Gerar cliente Prisma (SQLite local)
+npx prisma generate --schema=./db/schema.prisma
 ```
 
-## 🔑 Configuração da API (OBRIGATÓRIO)
+## 🔑 Configuração (OBRIGATÓRIO)
 
 ### Passo a passo para obter a chave da Replicate:
 
@@ -38,11 +44,20 @@ npm install
 3. **Configurar variáveis de ambiente**
    ```bash
    # Copie o arquivo de exemplo
-   cp .env.example .env.local
+   cp .env.example .env
    ```
 
-4. **Editar `.env.local`**
+4. **Editar `.env`**
    ```env
+   # Database (SQLite local)
+   DATABASE_URL="file:./dev.db"
+
+   # Auth.js
+   NEXTAUTH_URL=http://localhost:3000
+   NEXTAUTH_SECRET=sua_chave_secreta_aqui
+   GOOGLE_CLIENT_ID=seu_google_client_id
+   GOOGLE_CLIENT_SECRET=seu_google_client_secret
+
    # Escolha o provedor: replicate ou gemini
    IMAGE_PROVIDER=replicate
 
@@ -102,18 +117,29 @@ O prompt e montado no backend e inclui a opcao de area da roupa selecionada pelo
 
 ## 📝 Uso
 
-1. Abra o app no navegador
-2. Escolha **Link** ou **Upload** para a foto da pessoa
-3. Escolha **Link** ou **Upload** para a foto da roupa
-4. Selecione a area da roupa
-5. Clique em "Gerar Imagem"
-6. Veja o resultado e o historico no carrossel
+1. Execute `npm run dev`
+2. Acesse [http://localhost:3000](http://localhost:3000)
+3. Faça login com Google
+4. Escolha **Link** ou **Upload** para a foto da pessoa
+5. Escolha **Link** ou **Upload** para a foto da roupa
+6. Selecione a area da roupa
+7. Clique em "Gerar Imagem"
+8. Veja o resultado e o historico no carrossel
 
 ## 🔐 Variáveis de Ambiente
 
-Arquivo `.env.local` necessario:
+Arquivo `.env` necessario:
 
 ```env
+# Database (SQLite local)
+DATABASE_URL="file:./dev.db"
+
+# Auth.js
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=sua_chave_secreta_aqui
+GOOGLE_CLIENT_ID=seu_google_client_id
+GOOGLE_CLIENT_SECRET=seu_google_client_secret
+
 IMAGE_PROVIDER=replicate
 REPLICATE_API_TOKEN=r8_seu_token_aqui
 GEMINI_API_KEY=seu_token_gemini
@@ -123,6 +149,11 @@ GEMINI_IMAGE_MODEL=gemini-3-pro-image-preview
 ### Deployment (Vercel/Netlify):
 
 Configure as variaveis de ambiente no painel:
+- `DATABASE_URL`
+- `NEXTAUTH_URL`
+- `NEXTAUTH_SECRET`
+- `GOOGLE_CLIENT_ID`
+- `GOOGLE_CLIENT_SECRET`
 - `IMAGE_PROVIDER`
 - `REPLICATE_API_TOKEN`
 - `GEMINI_API_KEY`

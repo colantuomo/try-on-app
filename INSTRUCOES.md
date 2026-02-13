@@ -101,14 +101,7 @@ The current codebase doesn't use any of the breaking change APIs:
 
 Next.js 16 requires **Node.js 20.9.0+**. Update your development environment:
 
-```bash
-# Check current version
-node --version
-
-# If using nvm, install and use Node.js 20+
-nvm install 20
-nvm use 20
-```
+Keep local Node.js at 20.9+ (LTS) using your preferred version manager.
 
 ---
 
@@ -128,97 +121,13 @@ The project follows a **modular architecture** with clear separation of concerns
 
 ### Layer Responsibilities
 
-```
-┌─────────────────────────────────────────────┐
-│  app/              → Routes, Pages, Layouts │  (Presentation)
-│  app/api/          → API Route Handlers     │  (Interface / Controller)
-├─────────────────────────────────────────────┤
-│  lib/services/     → Business Logic         │  (Application / Domain)
-│  lib/validators/   → Input Validation       │  (Domain Guard)
-├─────────────────────────────────────────────┤
-│  lib/providers/    → AI Provider Adapters   │  (Infrastructure)
-│  db/               → Prisma Schema & Client │  (Infrastructure)
-│  lib/auth/         → Auth Configuration     │  (Infrastructure)
-│  lib/stripe/       → Payment Integration    │  (Infrastructure)
-├─────────────────────────────────────────────┤
-│  types/            → Shared Type Defs       │  (Cross-cutting)
-│  lib/utils/        → Pure Utility Functions │  (Cross-cutting)
-│  lib/constants/    → App-wide Constants     │  (Cross-cutting)
-└─────────────────────────────────────────────┘
-```
+Layer responsibilities follow presentation → application → infrastructure → cross-cutting separation as outlined in the folder structure.
 
 ---
 
 ## 3. Folder Structure
 
-```
-virtual-try-on-app/
-├── app/                          # Next.js App Router
-│   ├── layout.tsx                # Root layout (providers, global UI)
-│   ├── page.tsx                  # Landing / home page
-│   ├── globals.css               # Tailwind imports + custom styles
-│   ├── api/                      # API route handlers
-│   │   ├── auth/[...nextauth]/   # NextAuth route handler
-│   │   ├── try-on/route.ts       # Try-on generation endpoint
-│   │   ├── stripe/
-│   │   │   ├── checkout/route.ts # Create checkout session
-│   │   │   ├── portal/route.ts   # Customer portal redirect
-│   │   │   └── webhook/route.ts  # Stripe webhook handler
-│   │   └── usage/route.ts        # Usage tracking endpoint
-│   ├── dashboard/page.tsx        # Authenticated user dashboard
-│   ├── login/page.tsx            # Login page
-│   ├── pricing/page.tsx          # Pricing plans page
-│   ├── billing/page.tsx          # Billing management page
-│   └── checkout/
-│       ├── success/page.tsx      # Post-checkout success
-│       └── cancel/page.tsx       # Post-checkout cancellation
-│
-├── components/                   # Reusable UI components
-│   ├── ui/                       # Generic UI primitives (Button, Input, Modal, etc.)
-│   ├── layout/                   # Layout components (Header, Footer, Sidebar)
-│   └── features/                 # Feature-specific components (TryOnForm, ImagePreview, etc.)
-│
-├── lib/                          # Application logic & infrastructure
-│   ├── auth/                     # NextAuth config and helpers
-│   │   └── options.ts            # NextAuth options (providers, callbacks)
-│   ├── services/                 # Business logic (use cases)
-│   │   ├── try-on.service.ts     # Try-on orchestration logic
-│   │   ├── usage.service.ts      # Usage tracking and limits
-│   │   └── billing.service.ts    # Billing and subscription logic
-│   ├── providers/                # External API adapters
-│   │   ├── gemini.provider.ts    # Google Gemini integration
-│   │   └── replicate.provider.ts # Replicate integration
-│   ├── stripe/                   # Stripe setup and helpers
-│   │   └── client.ts            # Stripe SDK initialization
-│   ├── validators/               # Input validation functions
-│   │   └── try-on.validator.ts   # Validate try-on request inputs
-│   ├── utils/                    # Pure utility functions
-│   │   ├── image.ts              # Image processing helpers
-│   │   └── format.ts             # Formatting helpers
-│   └── constants/                # App-wide constants
-│       └── plans.ts              # Pricing plan definitions
-│
-├── db/                           # Database layer
-│   ├── schema.prisma             # Prisma schema definition
-│   ├── client.ts                 # Singleton Prisma client
-│   ├── migrations/               # Prisma migrations (auto-generated)
-│   └── seed.ts                   # Database seeding script
-│
-├── types/                        # Shared TypeScript types
-│   ├── try-on.ts                 # Try-on domain types
-│   ├── user.ts                   # User-related types
-│   └── api.ts                    # API request/response types
-│
-├── public/                       # Static assets
-│   └── uploads/                  # Uploaded images (dev only)
-│
-├── __tests__/                    # Test files (mirrors app structure)
-│   ├── services/
-│   ├── api/
-│   └── components/
-│
-└── config files...               # next.config.js, tsconfig.json, etc.
-```
+Use the folder layout described in this document; keep feature logic in lib/services and validation in lib/validators.
 
 ### Naming Conventions
 
@@ -246,18 +155,7 @@ virtual-try-on-app/
 
 ### TypeScript Rules
 
-```typescript
-// ✅ CORRECT: Explicit types, named export, clear intent
-export function calculateUsagePercentage(used: number, limit: number): number {
-  if (limit <= 0) return 0
-  return Math.min((used / limit) * 100, 100)
-}
-
-// ❌ WRONG: Implicit any, default export, unclear name
-export default function calc(a, b) {
-  return (a / b) * 100
-}
-```
+Prefer explicit types and named exports for utilities and shared logic.
 
 - Always use **strict TypeScript** (`"strict": true` in tsconfig).
 - Define **return types** for all public functions.
@@ -265,21 +163,7 @@ export default function calc(a, b) {
 - Prefer **`readonly`** for properties that should not be mutated.
 - Use **discriminated unions** for state modeling (avoid boolean flags).
 
-```typescript
-// ✅ Discriminated union — clear and exhaustive
-type TryOnResult =
-  | { status: 'success'; imageUrl: string }
-  | { status: 'safety_blocked'; reason: string }
-  | { status: 'error'; message: string }
-
-// ❌ Boolean flags — ambiguous and error-prone
-type TryOnResult = {
-  success: boolean
-  blocked: boolean
-  imageUrl?: string
-  error?: string
-}
-```
+Use discriminated unions for state modeling instead of boolean flags.
 
 ### Function Design
 
@@ -288,20 +172,7 @@ type TryOnResult = {
 - **No side effects in utility functions** — keep them pure.
 - **Early returns** over nested if/else chains.
 
-```typescript
-// ✅ CORRECT: Early returns, clear flow
-export function validateImageInput(input: string): ValidationResult {
-  if (!input) {
-    return { valid: false, error: 'Image input is required' }
-  }
-
-  if (!isValidUrl(input) && !isBase64DataUri(input)) {
-    return { valid: false, error: 'Must be a valid URL or base64 image' }
-  }
-
-  return { valid: true, error: null }
-}
-```
+Use early returns and keep validation logic concise.
 
 ### File Length
 
@@ -314,10 +185,7 @@ export function validateImageInput(input: string): ValidationResult {
 - Use `// TODO:` for known incomplete items. Always include context.
 - Use `// IMPORTANT:` or `// SECURITY:` for critical notes.
 
-```typescript
-// TODO: Add rate limiting per user after billing implementation
-// SECURITY: Never log the full API key — only the last 4 characters
-```
+Use TODO comments sparingly with context; reserve SECURITY comments for critical notes.
 
 ---
 
@@ -329,24 +197,7 @@ export function validateImageInput(input: string): ValidationResult {
 - **Never expose server secrets to the client** — only `NEXT_PUBLIC_*` vars reach the browser.
 - **Validate all env vars at startup** — fail fast if required vars are missing.
 
-```typescript
-// lib/config/env.ts
-function requireEnv(name: string): string {
-  const value = process.env[name]
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`)
-  }
-  return value
-}
-
-export const env = {
-  databaseUrl: requireEnv('DATABASE_URL'),
-  nextAuthSecret: requireEnv('NEXTAUTH_SECRET'),
-  stripeSecretKey: requireEnv('STRIPE_SECRET_KEY'),
-  // Client-safe vars (already public)
-  baseUrl: process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000',
-} as const
-```
+Validate all required environment variables at startup and fail fast if missing.
 
 ### Input Validation
 
@@ -354,28 +205,7 @@ export const env = {
 - Use TypeScript type narrowing and custom validation functions.
 - Validate types, formats, length limits, and allowed values.
 
-```typescript
-// lib/validators/try-on.validator.ts
-export function validateTryOnInput(body: unknown): TryOnRequest {
-  if (!body || typeof body !== 'object') {
-    throw new ValidationError('Request body must be a JSON object')
-  }
-
-  const { personInput, clothingInput } = body as Record<string, unknown>
-
-  if (typeof personInput !== 'string' || personInput.length === 0) {
-    throw new ValidationError('personInput is required and must be a string')
-  }
-
-  if (personInput.length > MAX_INPUT_LENGTH) {
-    throw new ValidationError(`personInput exceeds max length of ${MAX_INPUT_LENGTH}`)
-  }
-
-  // ... additional validations
-
-  return { personInput, clothingInput } as TryOnRequest
-}
-```
+Validate all external inputs in route handlers before calling services.
 
 ### API Security
 
@@ -386,16 +216,7 @@ export function validateTryOnInput(body: unknown): TryOnRequest {
 - **Sanitize file uploads** — validate MIME type, file size, and dimensions.
 - **Set security headers** via `next.config.js`:
 
-```javascript
-// next.config.js
-const securityHeaders = [
-  { key: 'X-Content-Type-Options', value: 'nosniff' },
-  { key: 'X-Frame-Options', value: 'DENY' },
-  { key: 'X-XSS-Protection', value: '1; mode=block' },
-  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
-]
-```
+Set standard security headers in Next.js configuration.
 
 ### Stripe Webhook Security
 
@@ -416,36 +237,7 @@ const securityHeaders = [
 
 Every API route should follow this standard structure:
 
-```typescript
-// app/api/[resource]/route.ts
-import { NextRequest, NextResponse } from 'next/server'
-import { getServerSession } from 'next-auth'
-import { authOptions } from '@/lib/auth/options'
-
-export async function POST(request: NextRequest): Promise<NextResponse> {
-  // 1. Authentication
-  const session = await getServerSession(authOptions)
-  if (!session?.user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
-  // 2. Parse & Validate Input
-  let body: unknown
-  try {
-    body = await request.json()
-  } catch {
-    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
-  }
-
-  const input = validateInput(body) // throws ValidationError if invalid
-
-  // 3. Execute Business Logic (delegated to service)
-  const result = await someService.execute(input, session.user)
-
-  // 4. Return Response
-  return NextResponse.json(result, { status: 200 })
-}
-```
+Route handlers must remain thin: authenticate, validate input, delegate to services, then respond.
 
 ### Principles
 
@@ -476,19 +268,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
 - **Schema file**: `db/schema.prisma`
 - **Singleton client**: `db/client.ts` — prevents multiple Prisma instances in development.
+- **Local tests**: SQLite is allowed until PostgreSQL is provisioned.
 
-```typescript
-// db/client.ts
-import { PrismaClient } from '@prisma/client'
-
-const globalForPrisma = globalThis as unknown as { prisma: PrismaClient }
-
-export const prisma = globalForPrisma.prisma ?? new PrismaClient()
-
-if (process.env.NODE_ENV !== 'production') {
-  globalForPrisma.prisma = prisma
-}
-```
+Use a singleton Prisma client in development to avoid hot-reload connection leaks.
 
 ### Schema Guidelines
 
@@ -498,28 +280,41 @@ if (process.env.NODE_ENV !== 'production') {
 - Use **enums** for fixed sets of values (e.g., plan types, status fields).
 - Use **relations** instead of storing raw IDs without a formal relation.
 
-```prisma
-model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String?
-  plan      Plan     @default(FREE)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+Define user plans as TRIAL, STARTER, PRO, and BUSINESS with TRIAL as default.
 
-  sessions  Session[]
-  tryOns    TryOn[]
-  usage     Usage?
+### Usage Plans and Credits (Critical)
 
-  @@index([email])
-}
+The system enforces hard limits for image generation. Always consume in this order:
 
-enum Plan {
-  FREE
-  PRO
-  ENTERPRISE
-}
-```
+1. Monthly plan quota
+2. Additional credits (if any)
+3. Block generation
+
+Never allow negative balance and never debit after generation.
+
+Recommended data model (simplified):
+
+Track monthly usage with period boundaries and store expiring credit packs for add-on credits.
+
+Plan limits (hard caps):
+
+- TRIAL: 10 images total, single purchase, no renewal
+- STARTER: 100 images per month
+- PRO: 1,000 images per month
+- BUSINESS: 3,000 images per month
+
+Additional credits:
+
+- Only consumed after monthly quota
+- Expire after 30-60 days
+- Do not auto-renew
+
+Backend rules (non-negotiable):
+
+- Never generate without balance
+- Never allow negative balance
+- Always validate and debit before generation
+- Never trust frontend
 
 ### Data Access
 
@@ -537,34 +332,7 @@ enum Plan {
 - Use **JWT strategy** (stateless, works well with Vercel/edge).
 - Configure **providers**: Google OAuth at minimum, expandable later.
 
-```typescript
-// lib/auth/options.ts
-import { NextAuthOptions } from 'next-auth'
-import GoogleProvider from 'next-auth/providers/google'
-import { PrismaAdapter } from '@auth/prisma-adapter'
-import { prisma } from '@/db/client'
-
-export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
-  providers: [
-    GoogleProvider({
-      clientId: requireEnv('GOOGLE_CLIENT_ID'),
-      clientSecret: requireEnv('GOOGLE_CLIENT_SECRET'),
-    }),
-  ],
-  callbacks: {
-    async session({ session, user }) {
-      if (session.user) {
-        session.user.id = user.id
-      }
-      return session
-    },
-  },
-  pages: {
-    signIn: '/login',
-  },
-}
-```
+Auth.js must use Google OAuth and store sessions via Prisma adapter, with session user id mapped in callbacks.
 
 ### Auth Patterns
 
@@ -582,33 +350,13 @@ export const authOptions: NextAuthOptions = {
 - **Small, focused components** — each component does ONE thing.
 - **Extract logic into custom hooks** — `useXxx.ts` files next to the component or in a `hooks/` folder.
 
-```
-components/
-  features/
-    TryOnForm/
-      TryOnForm.tsx        # Component (presentation)
-      useTryOnForm.ts      # Hook (logic)
-      TryOnForm.test.tsx   # Test
-```
+Prefer colocated component + hook + test structure for complex features.
 
 ### State Management with Zustand
 
 Use Zustand for global state that multiple components need (e.g., user preferences, UI state). Avoid it for server state — use React's built-in data fetching or SWR/React Query for that.
 
-```typescript
-// lib/stores/ui.store.ts
-import { create } from 'zustand'
-
-interface UIState {
-  isSidebarOpen: boolean
-  toggleSidebar: () => void
-}
-
-export const useUIStore = create<UIState>((set) => ({
-  isSidebarOpen: false,
-  toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),
-}))
-```
+Use Zustand only for shared UI state that multiple components need.
 
 ### Frontend Security
 
@@ -624,69 +372,11 @@ export const useUIStore = create<UIState>((set) => ({
 
 Define clear, typed errors for different failure scenarios:
 
-```typescript
-// lib/errors.ts
-export class AppError extends Error {
-  constructor(
-    message: string,
-    public readonly statusCode: number = 500,
-    public readonly code?: string,
-  ) {
-    super(message)
-    this.name = 'AppError'
-  }
-}
-
-export class ValidationError extends AppError {
-  constructor(message: string) {
-    super(message, 400, 'VALIDATION_ERROR')
-    this.name = 'ValidationError'
-  }
-}
-
-export class UnauthorizedError extends AppError {
-  constructor(message = 'Unauthorized') {
-    super(message, 401, 'UNAUTHORIZED')
-    this.name = 'UnauthorizedError'
-  }
-}
-
-export class ForbiddenError extends AppError {
-  constructor(message = 'Forbidden') {
-    super(message, 403, 'FORBIDDEN')
-    this.name = 'ForbiddenError'
-  }
-}
-
-export class NotFoundError extends AppError {
-  constructor(resource: string) {
-    super(`${resource} not found`, 404, 'NOT_FOUND')
-    this.name = 'NotFoundError'
-  }
-}
-```
+Use typed domain errors and map them to consistent HTTP responses.
 
 ### Error Handling in API Routes
 
-```typescript
-// Centralized error handler helper
-export function handleApiError(error: unknown): NextResponse {
-  if (error instanceof AppError) {
-    return NextResponse.json(
-      { error: error.message, code: error.code },
-      { status: error.statusCode },
-    )
-  }
-
-  // Log unexpected errors with context
-  console.error('[API Error]', error)
-
-  return NextResponse.json(
-    { error: 'Internal server error' },
-    { status: 500 },
-  )
-}
-```
+Keep a centralized API error handler for consistent responses.
 
 ---
 
@@ -696,16 +386,7 @@ Use structured `console.log` with consistent prefixes for easy filtering in prod
 
 ### Standards
 
-```typescript
-// ✅ Structured, filterable
-console.log('[TryOn] Generation started', { userId: user.id, provider: 'gemini' })
-console.warn('[Usage] User approaching limit', { userId: user.id, used: 45, limit: 50 })
-console.error('[Stripe] Webhook verification failed', { error: err.message })
-
-// ❌ Unstructured, uninformative
-console.log('started')
-console.log(error)
-```
+Use structured logs with a module prefix, and never log sensitive data.
 
 ### Rules
 
@@ -721,26 +402,7 @@ console.log(error)
 
 ### Framework: Vitest + Testing Library
 
-```typescript
-// vitest.config.ts
-import { defineConfig } from 'vitest/config'
-import react from '@vitejs/plugin-react'
-import path from 'path'
-
-export default defineConfig({
-  plugins: [react()],
-  test: {
-    environment: 'jsdom',
-    globals: true,
-    setupFiles: ['./__tests__/setup.ts'],
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, '.'),
-    },
-  },
-})
-```
+Use Vitest + Testing Library for unit and component tests with jsdom.
 
 ### What to Test
 
@@ -754,13 +416,7 @@ export default defineConfig({
 
 ### Test Naming
 
-```typescript
-describe('TryOnService', () => {
-  it('should return generated image URL on success', async () => { ... })
-  it('should throw ValidationError when person input is empty', () => { ... })
-  it('should enforce usage limit for free plan users', async () => { ... })
-})
-```
+Name tests by behavior and expected outcome.
 
 ### Rules
 
@@ -775,30 +431,7 @@ describe('TryOnService', () => {
 
 ### Required Environment Variables
 
-```env
-# Database
-DATABASE_URL=postgresql://user:pass@host:5432/dbname
-
-# Auth
-NEXTAUTH_SECRET=<random-32-char-string>
-NEXTAUTH_URL=http://localhost:3000
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-
-# AI Providers
-IMAGE_PROVIDER=gemini
-GEMINI_API_KEY=
-GEMINI_IMAGE_MODEL=gemini-2.0-flash-exp-image-generation
-REPLICATE_API_TOKEN=
-
-# Stripe
-STRIPE_SECRET_KEY=
-STRIPE_WEBHOOK_SECRET=
-NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=
-
-# App
-NEXT_PUBLIC_BASE_URL=http://localhost:3000
-```
+Document required environment variables in .env.example without sensitive values.
 
 ### Rules
 
@@ -873,38 +506,7 @@ DDD is applied **pragmatically**, not dogmatically. Use these patterns where the
 
 ### Example: Service with Domain Logic
 
-```typescript
-// lib/services/try-on.service.ts
-import { prisma } from '@/db/client'
-import { GeminiProvider } from '@/lib/providers/gemini.provider'
-import { ForbiddenError } from '@/lib/errors'
-import type { TryOnRequest, TryOnResult } from '@/types/try-on'
-
-export async function generateTryOn(
-  input: TryOnRequest,
-  userId: string,
-): Promise<TryOnResult> {
-  // Domain rule: check usage limits
-  const usage = await prisma.usage.findUnique({ where: { userId } })
-  const user = await prisma.user.findUniqueOrThrow({ where: { id: userId } })
-
-  if (usage && usage.count >= getPlanLimit(user.plan)) {
-    throw new ForbiddenError('Usage limit exceeded for your current plan')
-  }
-
-  // Delegate to infrastructure provider
-  const result = await GeminiProvider.generate(input)
-
-  // Track usage
-  await prisma.usage.upsert({
-    where: { userId },
-    create: { userId, count: 1 },
-    update: { count: { increment: 1 } },
-  })
-
-  return result
-}
-```
+Use services to orchestrate domain rules (usage limits) and delegate to providers.
 
 ---
 
@@ -920,6 +522,7 @@ export async function generateTryOn(
 | Security          | Validate all inputs. No client secrets. Verify webhooks. Sanitize uploads.   |
 | API Routes        | Thin handlers → delegate to services. Consistent error format.               |
 | Database          | Prisma only. No raw SQL. No direct import in routes. Always through services.|
+| Usage Plans       | Hard limits. Consume quota → credits → block. No negative balance.           |
 | State             | Zustand for global UI state. Server state via fetch/SWR.                     |
 | Tests             | Vitest + Testing Library. Mock externals. Test behavior, not implementation. |
 | Errors            | Typed error classes. Centralized handler. Never swallow errors silently.      |

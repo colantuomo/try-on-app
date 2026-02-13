@@ -1,6 +1,8 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { signOut, useSession } from 'next-auth/react'
+import Link from 'next/link'
 
 type HistoryItem = {
   url: string
@@ -18,6 +20,7 @@ const GEMINI_KEY_STORAGE = 'gemini_api_key'
 const MAX_HISTORY = 20
 
 export default function Home() {
+  const { data: session, status } = useSession()
   const [personSource, setPersonSource] = useState<'url' | 'upload' | 'saved'>('url')
   const [clothingSource, setClothingSource] = useState<'url' | 'upload'>('url')
   const [personUrl, setPersonUrl] = useState('')
@@ -279,6 +282,41 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center px-6 py-10">
       <div className="w-full max-w-5xl">
+        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+          <div className="text-sm text-slate-600">
+            {status === 'loading'
+              ? 'Carregando...'
+              : session
+                ? `Ola, ${session.user?.name ?? session.user?.email ?? 'usuario'}`
+                : 'Acesse com Google para salvar seu historico'}
+          </div>
+          <div className="flex flex-wrap gap-3">
+            {status === 'authenticated' && session ? (
+              <>
+                <Link
+                  href="/dashboard"
+                  className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+                >
+                  Dashboard
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => signOut({ callbackUrl: '/' })}
+                  className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                >
+                  Sair
+                </button>
+              </>
+            ) : (
+              <Link
+                href="/login"
+                className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+              >
+                Entrar
+              </Link>
+            )}
+          </div>
+        </div>
         <h1 className="text-center text-4xl font-bold text-slate-900">Virtual Try-On</h1>
         <p className="mt-3 text-center text-base text-slate-600">
           Informe o link da imagem ou faca upload para gerar o resultado com IA
