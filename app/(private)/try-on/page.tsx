@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 type HistoryItem = {
   url: string
@@ -21,6 +22,35 @@ const MAX_HISTORY = 20
 
 export default function Home() {
   const { data: session, status } = useSession()
+  const router = useRouter()
+
+  // Validação de autenticação - redireciona se não estiver logado
+  useEffect(() => {
+    if (status === 'loading') return // Ainda carregando, aguarda
+
+    if (status === 'unauthenticated' || !session) {
+      router.replace('/login')
+      return
+    }
+  }, [status, session, router])
+
+  // Estado de carregamento da sessão
+  if (status === 'loading') {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6">
+        <div className="text-center">
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600"></div>
+          <p className="mt-4 text-sm text-slate-600">Verificando autenticação...</p>
+        </div>
+      </main>
+    )
+  }
+
+  // Se não há sessão válida, não renderiza nada (o useEffect já redirecionou)
+  if (!session || status !== 'authenticated') {
+    return null
+  }
+
   const [personSource, setPersonSource] = useState<'url' | 'upload' | 'saved'>('url')
   const [clothingSource, setClothingSource] = useState<'url' | 'upload'>('url')
   const [personUrl, setPersonUrl] = useState('')
