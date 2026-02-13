@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { GoogleGenAI, HarmBlockMethod, HarmBlockThreshold, HarmCategory } from '@google/genai'
+import { getServerSession } from 'next-auth'
+import { GoogleGenAI } from '@google/genai'
 import Replicate from 'replicate'
+
+import { authOptions } from '@/lib/auth/options'
 
 type InlineImagePart = {
     inlineData: {
@@ -10,6 +13,14 @@ type InlineImagePart = {
 }
 
 export async function POST(request: NextRequest) {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.id) {
+        return NextResponse.json(
+            { error: 'Unauthorized' },
+            { status: 401 }
+        )
+    }
+
     try {
         const body = await request.json()
         const personInput = body?.personInput || (body?.personUrl ? { type: 'url', value: body.personUrl } : null)
