@@ -2,10 +2,11 @@ import { PrismaAdapter } from '@auth/prisma-adapter'
 import type { NextAuthOptions } from 'next-auth'
 import GoogleProvider from 'next-auth/providers/google'
 
-import { prisma } from '@/db/client'
+import prisma from '@/db/client'
 import { env } from '@/lib/config/env'
 
 export const authOptions: NextAuthOptions = {
+  secret: env.nextAuthSecret,
   adapter: PrismaAdapter(prisma),
   session: { strategy: 'jwt' },
   providers: [
@@ -31,4 +32,5 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/login',
   },
+  debug: process.env.NODE_ENV === 'development',
 }

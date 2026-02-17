@@ -274,7 +274,7 @@ Route handlers must remain thin: authenticate, validate input, delegate to servi
 ### Prisma Setup
 
 - **Schema files**:
-	- `db/schema.prisma` (SQLite for local/dev)
+	- `prisma/schema.prisma` (SQLite for local/dev)
 	- `prisma/schema.prisma` (PostgreSQL for production)
 - **Singleton client**: `db/client.ts` — prevents multiple Prisma instances in development.
 - **Local tests**: SQLite is allowed until PostgreSQL is provisioned.
@@ -532,7 +532,7 @@ Use services to orchestrate domain rules (usage limits) and delegate to provider
 | Exports           | Named exports (except Next.js pages/layouts).                                |
 | Security          | Validate all inputs. No client secrets. Verify webhooks. Sanitize uploads.   |
 | API Routes        | Thin handlers → delegate to services. Consistent error format.               |
-| Database          | Prisma only. No raw SQL. No direct import in routes. Always through services.|
+| Database          | Prisma version 7 only. No raw SQL. No direct import in routes. Always through services.|
 | Usage Plans       | Hard limits. Consume quota → credits → block. No negative balance.           |
 | State             | Zustand for global UI state. Server state via fetch/SWR.                     |
 | Tests             | Vitest + Testing Library. Mock externals. Test behavior, not implementation. |

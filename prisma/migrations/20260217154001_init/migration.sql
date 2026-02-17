@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Plan" AS ENUM ('TRIAL', 'STARTER', 'PRO', 'BUSINESS');
+CREATE TYPE "Plan" AS ENUM ('FREE', 'TRIAL', 'STARTER', 'PRO', 'BUSINESS');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -8,7 +8,7 @@ CREATE TABLE "User" (
     "email" TEXT,
     "emailVerified" TIMESTAMP(3),
     "image" TEXT,
-    "plan" "Plan" NOT NULL DEFAULT 'TRIAL',
+    "plan" "Plan" NOT NULL DEFAULT 'FREE',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

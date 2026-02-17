@@ -1,5 +1,0 @@
--- AlterEnum
-ALTER TYPE "Plan" ADD VALUE 'FREE';
-
--- AlterTable
-ALTER TABLE "User" ALTER COLUMN "plan" SET DEFAULT 'FREE';
