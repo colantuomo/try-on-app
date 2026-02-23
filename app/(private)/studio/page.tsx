@@ -320,11 +320,8 @@ export default function Home() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="mb-8 flex flex-wrap items-center justify-between gap-4"
+          className="mb-8 flex flex-wrap items-center justify-end gap-3"
         >
-          <div className="text-sm text-slate-600">
-            Ola, {session.user?.name ?? session.user?.email ?? 'usuario'}
-          </div>
           <div className="flex flex-wrap items-center gap-3">
             {status === 'authenticated' && session ? (
               <>
@@ -597,73 +594,53 @@ export default function Home() {
         {hasHistory && (
           <section className="mt-12 rounded-2xl bg-white p-6 shadow-lg shadow-slate-200">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <h2 className="text-lg font-semibold text-slate-800">Historico de imagens</h2>
+              <h2 className="text-lg font-semibold text-slate-800">Ultimas roupas</h2>
               <span className="text-sm text-slate-500">{history.length} geradas</span>
             </div>
 
-            <div className="mt-6 grid items-center gap-4 md:grid-cols-[auto_1fr_auto]">
-              <button
-                type="button"
-                className="h-11 w-11 rounded-full border border-indigo-200 bg-indigo-50 text-indigo-700"
-                onClick={handlePrev}
-                disabled={history.length < 2}
-                aria-label="Imagem anterior"
-              >
-                ◀
-              </button>
+            <div className="mt-6 grid gap-6 lg:grid-cols-[220px_1fr]">
+              <div className="max-h-[420px] space-y-3 overflow-y-auto pr-2">
+                {history.map((item, index) => (
+                  <div
+                    key={`${item.url}-${index}`}
+                    className={
+                      index === activeIndex
+                        ? 'relative rounded-xl border-2 border-blue-400'
+                        : 'relative rounded-xl border border-slate-200'
+                    }
+                  >
+                    <button
+                      type="button"
+                      className="block w-full"
+                      onClick={() => handleSelect(index)}
+                    >
+                      <img
+                        src={item.url}
+                        alt={`Imagem gerada ${index + 1}`}
+                        className="h-24 w-full rounded-lg object-cover"
+                      />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveHistory(index)}
+                      aria-label="Remover imagem"
+                      className="absolute right-2 top-2 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-xs font-semibold text-slate-700 shadow"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
 
-              <div className="flex min-h-[260px] items-center justify-center rounded-2xl bg-slate-50 p-4">
+              <div className="flex min-h-[320px] items-center justify-center rounded-2xl bg-slate-50 p-4">
                 {activeHistoryItem && (
                   <img
                     src={activeHistoryItem.url}
-                    alt="Imagem gerada anteriormente"
-                    className="max-h-[360px] rounded-2xl shadow-lg"
+                    alt="Imagem selecionada"
+                    className="max-h-[420px] rounded-2xl shadow-lg"
                   />
                 )}
               </div>
-
-              <button
-                type="button"
-                className="h-11 w-11 rounded-full border border-indigo-200 bg-indigo-50 text-indigo-700"
-                onClick={handleNext}
-                disabled={history.length < 2}
-                aria-label="Proxima imagem"
-              >
-                ▶
-              </button>
-            </div>
-
-            <div className="mt-6 grid auto-cols-[minmax(90px,1fr)] grid-flow-col gap-3 overflow-x-auto pb-2">
-              {history.map((item, index) => (
-                <div
-                  key={`${item.url}-${index}`}
-                  className={
-                    index === activeIndex
-                      ? 'relative rounded-xl border-2 border-indigo-400'
-                      : 'relative rounded-xl border-2 border-transparent'
-                  }
-                >
-                  <button
-                    type="button"
-                    className="block"
-                    onClick={() => handleSelect(index)}
-                  >
-                    <img
-                      src={item.url}
-                      alt={`Imagem gerada ${index + 1}`}
-                      className="h-20 w-full rounded-lg object-cover"
-                    />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveHistory(index)}
-                    aria-label="Remover imagem"
-                    className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-white/90 text-xs font-semibold text-slate-700 shadow"
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
             </div>
           </section>
         )}
