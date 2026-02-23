@@ -66,8 +66,13 @@ export default function Home() {
   }, [status, session, router])
 
   useEffect(() => {
+    const userId = session?.user?.id
+    if (!userId) return
+
+    const storageKey = `${HISTORY_KEY}_${userId}`
+
     try {
-      const raw = localStorage.getItem(HISTORY_KEY)
+      const raw = localStorage.getItem(storageKey)
       if (raw) {
         const parsed = JSON.parse(raw) as HistoryItem[]
         setHistory(parsed)
@@ -76,11 +81,16 @@ export default function Home() {
     } catch {
       setHistory([])
     }
-  }, [])
+  }, [session?.user?.id])
 
   useEffect(() => {
+    const userId = session?.user?.id
+    if (!userId) return
+
+    const storageKey = `${SAVED_PERSON_KEY}_${userId}`
+
     try {
-      const raw = localStorage.getItem(SAVED_PERSON_KEY)
+      const raw = localStorage.getItem(storageKey)
       if (raw) {
         const parsed = JSON.parse(raw) as ImageInput
         setSavedPerson(parsed)
@@ -88,26 +98,36 @@ export default function Home() {
     } catch {
       setSavedPerson(null)
     }
-  }, [])
+  }, [session?.user?.id])
 
 
   useEffect(() => {
+    const userId = session?.user?.id
+    if (!userId) return
+
+    const storageKey = `${HISTORY_KEY}_${userId}`
+
     try {
-      localStorage.setItem(HISTORY_KEY, JSON.stringify(history))
+      localStorage.setItem(storageKey, JSON.stringify(history))
     } catch {
       // Ignore storage failures
     }
-  }, [history])
+  }, [history, session?.user?.id])
 
   useEffect(() => {
+    const userId = session?.user?.id
+    if (!userId) return
+
+    const storageKey = `${SAVED_PERSON_KEY}_${userId}`
+
     try {
       if (savedPerson) {
-        localStorage.setItem(SAVED_PERSON_KEY, JSON.stringify(savedPerson))
+        localStorage.setItem(storageKey, JSON.stringify(savedPerson))
       }
     } catch {
       // Ignore storage failures
     }
-  }, [savedPerson])
+  }, [savedPerson, session?.user?.id])
 
 
   useEffect(() => {
