@@ -4,6 +4,7 @@ import { GoogleGenAI } from '@google/genai'
 import Replicate from 'replicate'
 
 import { authOptions } from '@/lib/auth/options'
+import { canUserGenerateImage, debitOneCredit } from '@/lib/services/usage.service'
 
 type InlineImagePart = {
     inlineData: {
@@ -21,12 +22,21 @@ export async function POST(request: NextRequest) {
         )
     }
 
+    const userId = session.user.id
+
     try {
+        const { canGenerate } = await canUserGenerateImage(userId)
+        if (!canGenerate) {
+            return NextResponse.json(
+                { error: 'Sem creditos disponiveis' },
+                { status: 403 }
+            )
+        }
+
         const body = await request.json()
         const personInput = body?.personInput || (body?.personUrl ? { type: 'url', value: body.personUrl } : null)
         const clothingInput = body?.clothingInput || (body?.clothingUrl ? { type: 'url', value: body.clothingUrl } : null)
         const garmentScope = body?.garmentScope || 'upper'
-        const geminiApiKey = typeof body?.geminiApiKey === 'string' ? body.geminiApiKey.trim() : ''
         const provider = (process.env.IMAGE_PROVIDER || 'replicate').toLowerCase()
         const scopeText =
             garmentScope === 'lower'
@@ -85,7 +95,7 @@ Generate only just one imagem
         let resultUrl = ''
 
         if (provider === 'gemini') {
-            const effectiveGeminiKey = geminiApiKey || process.env.GEMINI_API_KEY
+            const effectiveGeminiKey = process.env.GEMINI_API_KEY
             if (!effectiveGeminiKey) {
                 return NextResponse.json(
                     { error: 'GEMINI_API_KEY não configurada. Veja o README para instruções.' },
@@ -210,6 +220,16 @@ Generate only just one imagem
                     : typeof (output as { url?: () => string }).url === 'function'
                         ? (output as { url: () => string }).url()
                         : output
+        }
+
+        try {
+            await debitOneCredit(userId)
+        } catch (debitError) {
+            console.error('[Usage] Falha ao debitar credito:', debitError)
+            return NextResponse.json(
+                { error: 'Nao foi possivel debitar o credito' },
+                { status: 409 }
+            )
         }
 
         return NextResponse.json({

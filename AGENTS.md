@@ -433,4 +433,7 @@ DDD is applied **pragmatically**, not dogmatically. Use these patterns where the
 
 - `/api/auth/[...nextauth]`
 - `/api/try-on`
+- `/api/usage` - GET: Get user credits and plan info
+- `/api/stripe/checkout` - POST: Create Stripe checkout session
+- `/api/stripe/webhook` - POST: Handle Stripe webhook events
 

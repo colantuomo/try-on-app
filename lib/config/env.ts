@@ -12,6 +12,8 @@ export const env = {
   nextAuthSecret: requireEnv('NEXTAUTH_SECRET'),
   googleClientId: requireEnv('AUTH_GOOGLE_ID'),
   googleClientSecret: requireEnv('AUTH_GOOGLE_SECRET'),
+  stripeSecretKey: requireEnv('STRIPE_SECRET_KEY'),
+  stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET ?? '',
   imageProvider: process.env.IMAGE_PROVIDER ?? 'replicate',
   geminiApiKey: process.env.GEMINI_API_KEY,
   geminiImageModel: process.env.GEMINI_IMAGE_MODEL,

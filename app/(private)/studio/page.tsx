@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { signOut, useSession } from 'next-auth/react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { motion } from 'motion/react'
 
 type HistoryItem = {
   url: string
@@ -17,40 +18,13 @@ type ImageInput = {
 
 const HISTORY_KEY = 'tryon_history'
 const SAVED_PERSON_KEY = 'tryon_saved_person'
-const GEMINI_KEY_STORAGE = 'gemini_api_key'
 const MAX_HISTORY = 20
 
 export default function Home() {
   const { data: session, status } = useSession()
   const router = useRouter()
 
-  // Validação de autenticação - redireciona se não estiver logado
-  useEffect(() => {
-    if (status === 'loading') return // Ainda carregando, aguarda
-
-    if (status === 'unauthenticated' || !session) {
-      router.replace('/login')
-      return
-    }
-  }, [status, session, router])
-
-  // Estado de carregamento da sessão
-  if (status === 'loading') {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6">
-        <div className="text-center">
-          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600"></div>
-          <p className="mt-4 text-sm text-slate-600">Verificando autenticação...</p>
-        </div>
-      </main>
-    )
-  }
-
-  // Se não há sessão válida, não renderiza nada (o useEffect já redirecionou)
-  if (!session || status !== 'authenticated') {
-    return null
-  }
-
+  // All hooks must be declared before any conditional returns
   const [personSource, setPersonSource] = useState<'url' | 'upload' | 'saved'>('url')
   const [clothingSource, setClothingSource] = useState<'url' | 'upload'>('url')
   const [personUrl, setPersonUrl] = useState('')
@@ -59,13 +33,37 @@ export default function Home() {
   const [clothingDataUrl, setClothingDataUrl] = useState('')
   const [savedPerson, setSavedPerson] = useState<ImageInput | null>(null)
   const [garmentScope, setGarmentScope] = useState('upper')
-  const [geminiApiKey, setGeminiApiKey] = useState('')
-  const [rememberGeminiKey, setRememberGeminiKey] = useState(false)
   const [resultImage, setResultImage] = useState<string | null>(null)
   const [history, setHistory] = useState<HistoryItem[]>([])
   const [activeIndex, setActiveIndex] = useState(0)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [creditsRemaining, setCreditsRemaining] = useState<number | null>(null)
+
+  // All useEffect hooks
+  useEffect(() => {
+    if (status === 'loading') return // Ainda carregando, aguarda
+
+    if (status === 'unauthenticated' || !session) {
+      router.replace('/login')
+      return
+    }
+
+    // Fetch user credits
+    const fetchCredits = async () => {
+      try {
+        const response = await fetch('/api/usage')
+        if (response.ok) {
+          const data = await response.json()
+          setCreditsRemaining(data.creditsRemaining)
+        }
+      } catch (error) {
+        console.error('Error fetching credits:', error)
+      }
+    }
+
+    fetchCredits()
+  }, [status, session, router])
 
   useEffect(() => {
     try {
@@ -92,17 +90,6 @@ export default function Home() {
     }
   }, [])
 
-  useEffect(() => {
-    try {
-      const storedKey = localStorage.getItem(GEMINI_KEY_STORAGE)
-      if (storedKey) {
-        setGeminiApiKey(storedKey)
-        setRememberGeminiKey(true)
-      }
-    } catch {
-      // Ignore storage failures
-    }
-  }, [])
 
   useEffect(() => {
     try {
@@ -122,33 +109,6 @@ export default function Home() {
     }
   }, [savedPerson])
 
-  useEffect(() => {
-    try {
-      if (rememberGeminiKey && geminiApiKey) {
-        localStorage.setItem(GEMINI_KEY_STORAGE, geminiApiKey)
-      } else {
-        localStorage.removeItem(GEMINI_KEY_STORAGE)
-      }
-    } catch {
-      // Ignore storage failures
-    }
-  }, [geminiApiKey, rememberGeminiKey])
-
-  const hasHistory = history.length > 0
-  const activeHistoryItem = useMemo(() => history[activeIndex], [history, activeIndex])
-  const hasSavedPerson = Boolean(savedPerson?.value)
-
-  const isValidUrl = (value: string) => {
-    try {
-      const url = new URL(value)
-      return url.protocol === 'http:' || url.protocol === 'https:'
-    } catch {
-      return false
-    }
-  }
-
-  const isValidDataUrl = (value: string) =>
-    value.startsWith('data:image/') && value.includes('base64,')
 
   useEffect(() => {
     if (personSource === 'url' && isValidUrl(personUrl)) {
@@ -160,6 +120,24 @@ export default function Home() {
       setSavedPerson({ type: 'data', value: personDataUrl })
     }
   }, [personSource, personUrl, personDataUrl])
+
+  // Computed values
+  const hasHistory = history.length > 0
+  const activeHistoryItem = useMemo(() => history[activeIndex], [history, activeIndex])
+  const hasSavedPerson = Boolean(savedPerson?.value)
+
+  // Helper functions
+  const isValidUrl = (value: string) => {
+    try {
+      const url = new URL(value)
+      return url.protocol === 'http:' || url.protocol === 'https:'
+    } catch {
+      return false
+    }
+  }
+
+  const isValidDataUrl = (value: string) =>
+    value.startsWith('data:image/') && value.includes('base64,')
 
   const readFileAsDataUrl = (file: File) =>
     new Promise<string>((resolve, reject) => {
@@ -184,6 +162,22 @@ export default function Home() {
     }
 
     return dataValue ? { type: 'data', value: dataValue } : null
+  }
+
+  // Conditional returns AFTER all hooks
+  if (status === 'loading') {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6">
+        <div className="text-center">
+          <div className="mx-auto h-8 w-8 animate-spin rounded-full border-4 border-indigo-200 border-t-indigo-600"></div>
+          <p className="mt-4 text-sm text-slate-600">Verificando autenticação...</p>
+        </div>
+      </main>
+    )
+  }
+
+  if (!session || status !== 'authenticated') {
+    return null
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -241,7 +235,6 @@ export default function Home() {
           personInput,
           clothingInput,
           garmentScope,
-          geminiApiKey: geminiApiKey.trim() || undefined,
         }),
       })
 
@@ -261,6 +254,17 @@ export default function Home() {
         setHistory((prev) => [newItem, ...prev].slice(0, MAX_HISTORY))
         setActiveIndex(0)
         setSavedPerson(personInput)
+
+        // Update credits after successful generation
+        try {
+          const usageResponse = await fetch('/api/usage')
+          if (usageResponse.ok) {
+            const usageData = await usageResponse.json()
+            setCreditsRemaining(usageData.creditsRemaining)
+          }
+        } catch (error) {
+          console.error('Error updating credits:', error)
+        }
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Erro desconhecido')
@@ -310,25 +314,54 @@ export default function Home() {
   const canSubmit = Boolean(personInputPreview && clothingInputPreview) && !loading
 
   return (
-    <main className="flex min-h-screen flex-col items-center px-6 py-10">
-      <div className="w-full max-w-5xl">
-        <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+    <main className="min-h-screen bg-[radial-gradient(circle_at_top,_#dbeafe,_#f8fafc_55%,_#ffffff)] px-6 py-10">
+      <div className="mx-auto w-full max-w-5xl">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className="mb-8 flex flex-wrap items-center justify-between gap-4"
+        >
           <div className="text-sm text-slate-600">
             Ola, {session.user?.name ?? session.user?.email ?? 'usuario'}
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             {status === 'authenticated' && session ? (
               <>
+                <div className="flex items-center gap-3 rounded-full border border-slate-200 bg-white px-4 py-2">
+                  {session.user?.image && (
+                    <img
+                      src={session.user.image}
+                      alt={session.user.name || 'User'}
+                      className="h-8 w-8 rounded-full"
+                    />
+                  )}
+                  <div className="flex flex-col">
+                    <span className="text-xs font-medium text-slate-700">
+                      {session.user?.name || session.user?.email}
+                    </span>
+                    <span className="text-xs text-slate-500">
+                      {creditsRemaining !== null ? (
+                        <>
+                          <span className="font-semibold text-blue-600">{creditsRemaining}</span>{' '}
+                          creditos restantes
+                        </>
+                      ) : (
+                        'Carregando...'
+                      )}
+                    </span>
+                  </div>
+                </div>
                 <Link
-                  href="/dashboard"
-                  className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+                  href="/pricing"
+                  className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
                 >
-                  Dashboard
+                  Comprar creditos
                 </Link>
                 <button
                   type="button"
                   onClick={() => signOut({ callbackUrl: '/' })}
-                  className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                  className="rounded-full border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50"
                 >
                   Sair
                 </button>
@@ -336,14 +369,16 @@ export default function Home() {
             ) : (
               <Link
                 href="/login"
-                className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700"
+                className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
               >
                 Entrar
               </Link>
             )}
           </div>
-        </div>
-        <h1 className="text-center text-4xl font-bold text-slate-900">Virtual Try-On</h1>
+        </motion.div>
+        <h1 className="text-center font-display text-4xl font-semibold text-slate-900">
+          Try On Studio
+        </h1>
         <p className="mt-3 text-center text-base text-slate-600">
           Informe o link da imagem ou faca upload para gerar o resultado com IA
         </p>
@@ -532,43 +567,6 @@ export default function Home() {
               <option value="full">Roupa completa</option>
             </select>
           </div> */}
-
-          <p className="mt-6 text-sm text-slate-500">
-            O prompt e fixo e otimizado para o modelo nano-banana-pro.
-          </p>
-
-          <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-4">
-            <label className="text-sm font-semibold text-slate-700">
-              Chave do Gemini
-            </label>
-            <p className="mt-1 text-xs text-slate-500">
-              Gere a sua em{' '}
-              <a
-                href="https://aistudio.google.com/api-keys"
-                target="_blank"
-                rel="noreferrer"
-                className="font-semibold text-indigo-600 underline"
-              >
-                https://aistudio.google.com/api-keys
-              </a>
-            </p>
-            <input
-              type="password"
-              placeholder="Cole sua chave aqui"
-              value={geminiApiKey}
-              onChange={(e) => setGeminiApiKey(e.target.value)}
-              className="mt-3 w-full rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-200"
-            />
-            <label className="mt-3 flex items-center gap-2 text-xs text-slate-600">
-              <input
-                type="checkbox"
-                checked={rememberGeminiKey}
-                onChange={(e) => setRememberGeminiKey(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300"
-              />
-              Salvar esta chave neste navegador
-            </label>
-          </div>
 
           <button
             type="submit"
