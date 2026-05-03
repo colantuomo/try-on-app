@@ -13,7 +13,7 @@ export default function LandingPage() {
   const { data: session } = useSession()
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,_#dbeafe,_#f8fafc_55%,_#ffffff)]">
+    <div className="min-h-screen bg-red-600">
       <header className="relative z-10 px-6 py-6">
         <nav className="mx-auto flex max-w-6xl items-center justify-between">
           <div className="flex items-center gap-3">
@@ -21,14 +21,14 @@ export default function LandingPage() {
               TO
             </div>
             <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Try On</p>
-              <p className="text-sm font-semibold text-slate-900">Studio</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-white">Try On</p>
+              <p className="text-sm font-semibold text-white">Studio</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             <Link
               href="/pricing"
-              className="rounded-full border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+              className="rounded-full border border-white px-4 py-2 text-xs font-semibold text-white hover:bg-red-700"
             >
               Planos
             </Link>
@@ -56,13 +56,13 @@ export default function LandingPage() {
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.2, ease: 'easeOut' }}
-          className="pointer-events-none absolute -right-24 top-10 h-64 w-64 rounded-full bg-blue-200/60 blur-3xl"
+          className="pointer-events-none absolute -right-24 top-10 h-64 w-64 rounded-full bg-red-700/60 blur-3xl"
         />
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1.4, ease: 'easeOut', delay: 0.1 }}
-          className="pointer-events-none absolute -left-28 bottom-24 h-72 w-72 rounded-full bg-amber-200/40 blur-3xl"
+          className="pointer-events-none absolute -left-28 bottom-24 h-72 w-72 rounded-full bg-red-500/40 blur-3xl"
         />
 
         <div className="mx-auto flex max-w-6xl flex-col gap-12 px-6 pb-24 pt-14 lg:flex-row lg:items-center lg:justify-between">
@@ -73,14 +73,14 @@ export default function LandingPage() {
             transition={{ duration: 0.8, ease: 'easeOut' }}
             className="max-w-xl"
           >
-            <p className="text-xs uppercase tracking-[0.4em] text-slate-500">IA fashion lab</p>
-            <h1 className="mt-4 font-display text-4xl font-semibold text-slate-900 sm:text-5xl">
+            <p className="text-xs uppercase tracking-[0.4em] text-white">IA fashion lab</p>
+            <h1 className="mt-4 font-display text-4xl font-semibold text-white sm:text-5xl">
               Try On
-              <span className="text-blue-600"> cria provas</span>
+              <span className="text-blue-400"> cria provas</span>
               <br />
               visuais com elegancia
             </h1>
-            <p className="mt-6 text-base leading-relaxed text-slate-600">
+            <p className="mt-6 text-base leading-relaxed text-white">
               Transforme seu look em segundos. Envie uma foto e uma roupa, e veja a
               combinacao pronta para vitrine. Sem esforco, com realismo.
             </p>
@@ -88,21 +88,21 @@ export default function LandingPage() {
               {session ? (
                 <Link
                   href="/studio"
-                  className="rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200/60 hover:bg-blue-700"
+                  className="rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-900/60 hover:bg-blue-700"
                 >
                   Comecar agora
                 </Link>
               ) : (
                 <Link
                   href="/login"
-                  className="rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200/60 hover:bg-blue-700"
+                  className="rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-900/60 hover:bg-blue-700"
                 >
                   Criar conta
                 </Link>
               )}
               <Link
                 href="/pricing"
-                className="rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                className="rounded-full border border-white px-6 py-3 text-sm font-semibold text-white hover:bg-red-700"
               >
                 Ver precos
               </Link>
@@ -115,9 +115,9 @@ export default function LandingPage() {
             transition={{ duration: 0.9, ease: 'easeOut', delay: 0.2 }}
             className="relative w-full max-w-md"
           >
-            <div className="rounded-3xl border border-slate-200 bg-white/80 p-6 shadow-xl shadow-slate-200">
+            <div className="rounded-3xl border border-white bg-white/10 p-6 shadow-xl shadow-red-900/60 backdrop-blur-sm">
               <div className="flex items-center justify-between">
-                <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Preview</p>
+                <p className="text-xs uppercase tracking-[0.3em] text-white">Preview</p>
                 <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
                   Arte viva
                 </span>
@@ -126,7 +126,7 @@ export default function LandingPage() {
                 <div className="h-32 rounded-2xl bg-gradient-to-br from-slate-100 via-white to-blue-50" />
                 <div className="h-28 rounded-2xl bg-gradient-to-br from-amber-50 via-white to-slate-100" />
               </div>
-              <p className="mt-6 text-sm text-slate-600">
+              <p className="mt-6 text-sm text-white">
                 Combine textura, caimento e cor com uma paleta minimalista e foco na elegancia.
               </p>
             </div>
@@ -158,12 +158,12 @@ export default function LandingPage() {
             ].map((item) => (
               <div
                 key={item.title}
-                className="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg shadow-slate-200/60"
+                className="rounded-2xl border border-white bg-white/10 p-6 shadow-lg shadow-red-900/60 backdrop-blur-sm"
               >
-                <h3 className="font-display text-xl font-semibold text-slate-900">
+                <h3 className="font-display text-xl font-semibold text-white">
                   {item.title}
                 </h3>
-                <p className="mt-3 text-sm text-slate-600">{item.description}</p>
+                <p className="mt-3 text-sm text-white">{item.description}</p>
               </div>
             ))}
           </motion.div>
