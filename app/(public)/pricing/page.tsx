@@ -8,11 +8,29 @@ import { motion } from 'motion/react'
 
 type Currency = 'usd' | 'brl'
 
+type Plan = {
+  id: string
+  name: string
+  priceUsd: number
+  priceBrl: number
+  description: string
+}
+
 type CreditPack = {
   size: 10 | 30 | 50 | 100
   priceUsd: number
   priceBrl: number
 }
+
+const PLANS: Plan[] = [
+  {
+    id: 'basic',
+    name: 'Plano Básico',
+    priceUsd: 5.0,
+    priceBrl: 5.0,
+    description: 'Perfeito para começar',
+  },
+]
 
 const CREDIT_PACKS: CreditPack[] = [
   { size: 10, priceUsd: 9.9, priceBrl: 9.9 },
