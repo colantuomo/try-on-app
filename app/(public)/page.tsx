@@ -73,7 +73,10 @@ export default function LandingPage() {
             transition={{ duration: 0.8, ease: 'easeOut' }}
             className="max-w-xl"
           >
-            <p className="text-xs uppercase tracking-[0.4em] text-slate-500">IA fashion lab</p>
+            <div className="inline-flex items-center rounded-full bg-blue-100 px-4 py-2">
+              <span className="text-xs font-semibold text-blue-700">Em Beta — Evoluindo continuamente</span>
+            </div>
+            <p className="mt-6 text-xs uppercase tracking-[0.4em] text-slate-500">IA fashion lab</p>
             <h1 className="mt-4 font-display text-4xl font-semibold text-slate-900 sm:text-5xl">
               Try On
               <span className="text-blue-600"> cria provas</span>
