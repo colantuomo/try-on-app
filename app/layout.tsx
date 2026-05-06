@@ -14,8 +14,8 @@ const manrope = Manrope({
 })
 
 export const metadata: Metadata = {
-  title: 'Virtual Try-On App',
-  description: 'Upload your photo and clothing to see how it looks on you using AI',
+  title: 'Itaú - Prova Visual',
+  description: 'Tecnologia de prova visual do Itaú. Envie sua foto e uma peça de roupa para ver como fica em você usando IA',
 }
 
 export default function RootLayout({
