@@ -18,11 +18,11 @@ export default function LandingPage() {
         <nav className="mx-auto flex max-w-6xl items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-600 text-sm font-semibold text-white">
-              TO
+              IT
             </div>
             <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Try On</p>
-              <p className="text-sm font-semibold text-slate-900">Studio</p>
+              <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Itaú</p>
+              <p className="text-sm font-semibold text-slate-900">Prova Visual</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -73,16 +73,17 @@ export default function LandingPage() {
             transition={{ duration: 0.8, ease: 'easeOut' }}
             className="max-w-xl"
           >
-            <p className="text-xs uppercase tracking-[0.4em] text-slate-500">IA fashion lab</p>
+            <p className="text-xs uppercase tracking-[0.4em] text-slate-500">Prova visual com IA</p>
             <h1 className="mt-4 font-display text-4xl font-semibold text-slate-900 sm:text-5xl">
-              Try On
-              <span className="text-blue-600"> cria provas</span>
+              Itaú
+              <span className="text-blue-600"> - Prova Visual</span>
               <br />
-              visuais com elegancia
+              com Elegância
             </h1>
             <p className="mt-6 text-base leading-relaxed text-slate-600">
-              Transforme seu look em segundos. Envie uma foto e uma roupa, e veja a
-              combinacao pronta para vitrine. Sem esforco, com realismo.
+              Transforme sua experiência de compra com a tecnologia de prova visual do Itaú.
+              Envie uma foto e uma peça de roupa, e veja como fica em você instantaneamente.
+              Sem esforço, com realismo.
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-4">
               {session ? (
@@ -90,7 +91,7 @@ export default function LandingPage() {
                   href="/studio"
                   className="rounded-full bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-200/60 hover:bg-blue-700"
                 >
-                  Comecar agora
+                  Começar agora
                 </Link>
               ) : (
                 <Link
@@ -104,7 +105,7 @@ export default function LandingPage() {
                 href="/pricing"
                 className="rounded-full border border-slate-300 px-6 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50"
               >
-                Ver precos
+                Ver preços
               </Link>
             </div>
           </motion.div>
@@ -119,7 +120,7 @@ export default function LandingPage() {
               <div className="flex items-center justify-between">
                 <p className="text-xs uppercase tracking-[0.3em] text-slate-500">Preview</p>
                 <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
-                  Arte viva
+                  Prova ao Vivo
                 </span>
               </div>
               <div className="mt-6 grid gap-4">
@@ -127,7 +128,7 @@ export default function LandingPage() {
                 <div className="h-28 rounded-2xl bg-gradient-to-br from-amber-50 via-white to-slate-100" />
               </div>
               <p className="mt-6 text-sm text-slate-600">
-                Combine textura, caimento e cor com uma paleta minimalista e foco na elegancia.
+                Combine textura, caimento e cor com a tecnologia de prova visual do Itaú.
               </p>
             </div>
           </motion.div>
@@ -144,16 +145,16 @@ export default function LandingPage() {
           >
             {[
               {
-                title: 'Detalhe realista',
-                description: 'Texturas e cortes com acabamento de catalogo.',
+                title: 'Detalhe Realista',
+                description: 'Texturas e cortes com acabamento de catálogo profissional.',
               },
               {
-                title: 'Fluxo rapido',
-                description: 'Carregue imagens e receba a prova em segundos.',
+                title: 'Fluxo Rápido',
+                description: 'Carregue suas imagens e receba a prova em segundos.',
               },
               {
-                title: 'Estetica premium',
-                description: 'Resultados consistentes para vitrines digitais.',
+                title: 'Estética Premium',
+                description: 'Resultados consistentes para a melhor experiência de compra.',
               },
             ].map((item) => (
               <div
